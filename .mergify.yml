@@ -7,8 +7,17 @@ pull_request_rules:
     actions:
       comment:
         message: >
-          👋 @{{author}} your PR is conflicting and needs to be updated to be
-          merged :wink:
+          👋 @{{author}} your PR is conflicting and needs to be updated to be merged 😉
+  - name: Ping PR author when title does not follow conventional commits
+    description: Warn the pull request author when their PR title does not follow conventional commits
+    conditions:
+      - '-title ~= ^(fix|feat|docs|style|refactor|perf|test|build|ci|chore|revert)(?:(.+))?:'
+    actions:
+      comment:
+        message: >-
+          👋 @{{author}} your PR title does not follow conventional commits.
+          If squashed the new commit won't be complaint to those conventions 
+          (refer to https://www.conventionalcommits.org/).
   - name: Automatic merge when CI passes and approved (rebase by default)
     conditions:
       - '#approved-reviews-by>=2'
