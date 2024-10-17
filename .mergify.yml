@@ -19,8 +19,13 @@ pull_request_rules:
           ⚠️ If squashed, the new commit won't be complaint with those conventions (please, refer to https://www.conventionalcommits.org/).
   - name: Automatic rebase when CI passes and approved (rebase by default)
     conditions:
-      - '#approved-reviews-by>=2'
+      - or:
+        - '#approved-reviews-by>=2'
+        - and:
+            - '#approved-reviews-by=1'
+            - updated-at > 8 hours ago
       - check-success~=.*success
+      - '#review-threads-unresolved=0'
       - base=main
       - label=rebase
       - '-draft'
@@ -30,8 +35,13 @@ pull_request_rules:
         method: rebase
   - name: Automatic squash when CI passes and approved
     conditions:
-      - '#approved-reviews-by>=2'
+      - or:
+        - '#approved-reviews-by>=2'
+        - and:
+            - '#approved-reviews-by=1'
+            - updated-at > 8 hours ago
       - check-success~=.*success
+      - '#review-threads-unresolved=0'
       - base=main
       - label=squash
       - '-draft'
