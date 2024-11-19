@@ -23,7 +23,7 @@ pull_request_rules:
         - '#approved-reviews-by>=2'
         - and:
             - '#approved-reviews-by=1'
-            - updated-at > 8 hours ago
+            - updated-at <= 4 hours ago
       - check-success~=.*success
       - '#review-threads-unresolved=0'
       - base=main
@@ -39,7 +39,7 @@ pull_request_rules:
         - '#approved-reviews-by>=2'
         - and:
             - '#approved-reviews-by=1'
-            - updated-at > 8 hours ago
+            - updated-at <= 4 hours ago
       - check-success~=.*success
       - '#review-threads-unresolved=0'
       - base=main
