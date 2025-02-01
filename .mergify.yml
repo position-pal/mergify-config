@@ -6,6 +6,7 @@ pull_request_rules:
       - '-closed'
     actions:
       comment:
+        bot_account: position-pal-mate
         message: >
           👋 @{{author}} your PR is conflicting and needs to be updated to be merged 😉
   - name: Ping PR author when title does not follow conventional commits
@@ -14,39 +15,32 @@ pull_request_rules:
       - '-title ~= ^(fix|feat|docs|style|refactor|perf|test|build|ci|chore|revert)(?:(.+))?:'
     actions:
       comment:
+        bot_account: position-pal-mate
         message: >
           👋 @{{author}} your PR title does not follow conventional commits guidelines.
-          ⚠️ If squashed, the new commit won't be complaint with those conventions (please, refer to https://www.conventionalcommits.org/).
+          ⚠️ If squashed, the new commit won't be complaint with those conventions (please, refer to https://www.conventionalcommits.org/). If you are planning to rebase or merge this you can ignore this message.
   - name: Automatic rebase when CI passes and approved (rebase by default)
     conditions:
-      - or:
-        - '#approved-reviews-by>=2'
-        - and:
-            - '#approved-reviews-by=1'
-            - updated-at <= 4 hours ago
-      - check-success~=.*success
-      - '#review-threads-unresolved=0'
       - base=main
       - label=rebase
-      - '-draft'
-      - '-conflict'
     actions:
       merge:
         method: rebase
         merge_bot_account: position-pal-mate
   - name: Automatic squash when CI passes and approved
     conditions:
-      - or:
-        - '#approved-reviews-by>=2'
-        - and:
-            - '#approved-reviews-by=1'
-            - updated-at <= 4 hours ago
-      - check-success~=.*success
-      - '#review-threads-unresolved=0'
       - base=main
       - label=squash
-      - '-draft'
-      - '-conflict'
+    actions:
+      merge:
+        method: squash
+        merge_bot_account: position-pal-mate
+  - name: Automatic rebase dependencies bots working PRs
+    conditions:
+      - and:
+        - or: &bots
+          - author=renovate[bot]
+          - author=dependabot[bot]
     actions:
       merge:
         method: squash
@@ -57,3 +51,29 @@ pull_request_rules:
     actions:
       delete_head_branch:
         force: false
+
+merge_protections:
+  - name: Development merge requirements
+    description: Requirements to be met before merging to the main branch an increment
+    if:
+      - base=main
+      - '-author=renovate[bot]'
+    success_conditions:
+      - or:
+        - '#approved-reviews-by>=2'
+        - and:
+            - '#approved-reviews-by=1'
+            - updated-at <= 4 hours ago
+      - check-success~=.*success
+      - '#review-threads-unresolved=0'
+      - '-conflict'
+      - '-draft'
+  - name: Bots merge requirements
+    description: Requirements to be met by bots
+    if:
+      - or: *bots
+    success_conditions:
+      - check-success~=.*success
+      - '#review-threads-unresolved=0'
+      - "#commits-behind=0"
+      - '-draft'
