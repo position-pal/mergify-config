@@ -19,9 +19,13 @@ pull_request_rules:
         message: >
           👋 @{{author}} your PR title does not follow conventional commits guidelines.
           ⚠️ If squashed, the new commit won't be complaint with those conventions (please, refer to https://www.conventionalcommits.org/). If you are planning to rebase or merge this you can ignore this message.
-  - name: Automatic rebase when CI passes and approved (rebase by default)
+  - name: Automatic rebase when CI passes and approved
     conditions:
-      - base=main
+      - or: &approval_requirements
+        - '#approved-reviews-by>=2'
+        - and:
+            - '#approved-reviews-by=1'
+            - updated-at <= 4 hours ago
       - label=rebase
     actions:
       merge:
@@ -29,7 +33,7 @@ pull_request_rules:
         merge_bot_account: position-pal-mate
   - name: Automatic squash when CI passes and approved
     conditions:
-      - base=main
+      - or: *approval_requirements
       - label=squash
     actions:
       merge:
@@ -59,11 +63,6 @@ merge_protections:
       - base=main
       - '-author=renovate[bot]'
     success_conditions:
-      - or:
-        - '#approved-reviews-by>=2'
-        - and:
-            - '#approved-reviews-by=1'
-            - updated-at <= 4 hours ago
       - check-success~=.*success
       - '#review-threads-unresolved=0'
       - '-conflict'
