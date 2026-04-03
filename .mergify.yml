@@ -22,10 +22,10 @@ pull_request_rules:
   - name: Automatic rebase when CI passes and approved
     conditions:
       - or: &approval_requirements
-        - '#approved-reviews-by>=2'
-        - and:
-            - '#approved-reviews-by=1'
-            - updated-at <= 4 hours ago
+          - '#approved-reviews-by>=2'
+          - and:
+              - '#approved-reviews-by=1'
+              - updated-at <= 4 hours ago
       - label=rebase
     actions:
       merge:
@@ -42,9 +42,9 @@ pull_request_rules:
   - name: Automatic rebase dependencies bots working PRs
     conditions:
       - and:
-        - or: &authors_are_bots
-          - author=renovate[bot]
-          - author=dependabot[bot]
+          - or: &authors_are_bots
+              - author=renovate[bot]
+              - author=dependabot[bot]
     actions:
       merge:
         method: squash
@@ -53,20 +53,13 @@ pull_request_rules:
     conditions:
       - "#files > 0"
       - and: &authors_are_not_bots
-        - '-author=renovate[bot]'
-        - '-author=dependabot[bot]'
+          - '-author=renovate[bot]'
+          - '-author=dependabot[bot]'
     actions:
       request_reviews:
         users_from_teams:
           - "SAP-SPE-Team"
         bot_account: position-pal-mate
-  - name: Delete head branch after merge but not if other PRs depend on it
-    conditions:
-      - merged
-    actions:
-      delete_head_branch:
-        force: false
-
 merge_protections:
   - name: Development merge requirements
     description: Requirements to be met before merging to the main branch an increment
@@ -87,3 +80,5 @@ merge_protections:
       - '#review-threads-unresolved=0'
       - "#commits-behind=0"
       - '-draft'
+merge_protections_settings:
+  reporting_method: check-runs
