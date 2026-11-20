@@ -60,12 +60,6 @@ pull_request_rules:
         users_from_teams:
           - "SAP-SPE-Team"
         bot_account: position-pal-mate
-  - name: Delete head branch after merge but not if other PRs depend on it
-    conditions:
-      - merged
-    actions:
-      delete_head_branch:
-        force: false
 
 merge_protections:
   - name: Development merge requirements
